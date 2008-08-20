@@ -8,7 +8,13 @@
 
 require 'rssify'
 
-RSSFier.new('malvados.xml',
+class MalvadosRSSFier < RSSFier
+  def get_body(s)
+    "<p><img src='http://www.malvados.com.br/" + s.scan(/(tirinha\d+.gif)/)[0][0] + "' /></p>"
+  end
+end
+
+MalvadosRSSFier.new('malvados.xml',
         'www.malvados.com.br',
         'http://www.malvados.com.br/',
         'Malvados - Quadrinhos de Humor',

@@ -12,6 +12,9 @@ class OOtSRSSFier < RSSFier
   def next_item
     @next_tem = "0#{@next_item}" if @next_item < 1000
   end
+  def get_body(s)
+    "<p><img src='http://www.giantitp.com/" + s.scan(/(\/comics\/images\/.+.gif)/)[0][0] + "' /></p>"
+  end
 end
 
 OOtSRSSFier.new('oots.xml',
