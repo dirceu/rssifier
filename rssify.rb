@@ -51,7 +51,7 @@ class RSSFier
           i = m.items.new_item
           i.title = title_templ
           i.description = get_body(response.body)
-          i.link = "#{@host}#{link_templ}"
+          i.link = "http://#{@host}#{link_templ}"
           i.date = Time.parse(response['last-modified'])
         end
         @next_item = next_item.to_i-1
