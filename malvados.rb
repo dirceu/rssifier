@@ -20,4 +20,5 @@ MalvadosRSSFier.new('malvados.xml',
         'Malvados - Quadrinhos de Humor',
         'Unofficial Malvados feed by Dirceu Pereira Tiegs - http://dirceu.info',
         'Malvados #{next_item}',
-        '/index#{next_item}.html')
+        '/index#{next_item}.html',
+        ARGV[0])

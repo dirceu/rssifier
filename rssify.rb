@@ -3,14 +3,15 @@ require 'rss/2.0'
 require 'rss/maker'
 
 class RSSFier
+  
   attr_reader :next_item
-  def initialize(filename,host,home,title,description,title_templ,link_templ)
-    @host,@home,@title,@description,@title_templ,@link_templ = host,home,title,description,title_templ,link_templ
-    @rss_version = '2.0'
+  
+  def initialize(filename,host,home,title,description,title_templ,link_templ,next_item)
+    @host,@home,@title,@description,@title_templ,@link_templ,@next_item = host,home,title,description,title_templ,link_templ,next_item
     @rss_filename = File.expand_path('.') + '/' + filename
-    @content = ''
-    
-    guess_next_item
+    if !@next_item
+      guess_next_item
+    end
     create_feed
     write_feed
   end
@@ -39,7 +40,7 @@ class RSSFier
   end
   
   def create_feed
-    @content = RSS::Maker.make(@rss_version) do |m|
+    @content = RSS::Maker.make('2.0') do |m|
       m.channel.title = @title
       m.channel.link = @home
       m.channel.description = @description
