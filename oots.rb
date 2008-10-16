@@ -8,7 +8,7 @@
 
 require 'rssify'
 
-rssify :malvados do
+rssify do
   { 
     :filename => 'oots.xml',
     :host => 'www.giantitp.com',

@@ -8,7 +8,7 @@
 
 require 'rssify'
 
-rssify :malvados do
+rssify do
   { 
     :filename => 'malvados.xml',
     :host => 'www.malvados.com.br',

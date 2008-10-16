@@ -72,7 +72,7 @@ class RSSFier
   end
 end
 
-def rssify(name, &block)
+def rssify &block
   params = yield
   feed = RSSFier.new(params)
   feed.create_feed
