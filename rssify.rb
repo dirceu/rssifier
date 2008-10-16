@@ -4,18 +4,19 @@ require 'rss/maker'
 
 class RSSFier
   
-  attr_reader :next_item
-  
-  def initialize(filename,host,home,title,description,title_templ,link_templ,next_item)
-    @host,@home,@title,@description,@title_templ,@link_templ,@next_item = host,home,title,description,title_templ,link_templ,next_item
-    @rss_filename = File.expand_path('.') + '/' + filename
+  def initialize(p)
+    # FIXME: These is fcking ugly!
+    @host,@home,@title,@description,@title_templ,@link_templ,@get_body,@next_item_getter,@next_item = p[:host],p[:home],p[:title],p[:description],p[:title_templ],p[:link_templ],p[:get_body],p[:next_item_getter],p[:next_item]
+    @rss_filename = File.expand_path('.') + '/' + p[:filename]
     if !@next_item
       guess_next_item
     end
-    create_feed
-    write_feed
   end
-  
+
+  def next_item
+    @next_item = @next_item_getter.call(@next_item)
+  end
+
   def _render_templ(s)
     s.gsub('#{next_item}', next_item.to_s)
   end
@@ -27,7 +28,11 @@ class RSSFier
   def title_templ
     _render_templ(@title_templ)
   end
-  
+
+  def get_body(s)
+    @get_body.call(s)
+  end
+
   def guess_next_item
     # guess the next possible comic number
     rss_content = open(@rss_filename) do |f| f.read end
@@ -65,4 +70,11 @@ class RSSFier
       f.write(@content)
     end
   end
+end
+
+def rssify(name, &block)
+  params = yield
+  feed = RSSFier.new(params)
+  feed.create_feed
+  feed.write_feed
 end

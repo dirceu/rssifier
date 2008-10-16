@@ -8,20 +8,17 @@
 
 require 'rssify'
 
-class OOtSRSSFier < RSSFier
-  def next_item
-    @next_tem = "0#{@next_item}" if @next_item.to_i < 1000
-  end
-  def get_body(s)
-    "<p><img src='http://www.giantitp.com/" + s.scan(/(\/comics\/images\/.+.gif)/)[0][0] + "' /></p>"
-  end
+rssify :malvados do
+  { 
+    :filename => 'oots.xml',
+    :host => 'www.giantitp.com',
+    :home => 'http://www.giantitp.com/comics/oots.html',
+    :title => 'The Order of the Stick',
+    :description => 'Unofficial OOtS feed by Dirceu Pereira Tiegs - http://dirceu.info',
+    :title_templ =>  'OOtS #{next_item}',
+    :link_templ => '/comics/oots#{next_item}.html',
+    :get_body => Proc.new {|s| "<p><img src='http://www.giantitp.com/" + s.scan(/(\/comics\/images\/.+.gif)/)[0][0] + "' /></p>" },
+    :next_item_getter => Proc.new { |next_item| "0#{next_item.to_i}" if next_item.to_i < 1000 },
+    :next_item => ARGV[0],
+  }
 end
-
-OOtSRSSFier.new('oots.xml',
-        'www.giantitp.com',
-        'http://www.giantitp.com/comics/oots.html',
-        'The Order of the Stick',
-        'Unofficial OOtS feed by Dirceu Pereira Tiegs - http://dirceu.info',
-        'OOtS #{next_item}',
-        '/comics/oots#{next_item}.html',
-        ARGV[0])
