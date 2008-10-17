@@ -3,7 +3,7 @@ require 'uri'
 require 'rss/2.0'
 require 'rss/maker'
 
-class RSSFier
+class RSSifier
   
   def initialize(p)
     # FIXME: These is fcking ugly!
@@ -75,7 +75,7 @@ end
 
 def rssify &block
   params = yield
-  feed = RSSFier.new(params)
+  feed = RSSifier.new(params)
   feed.create_feed
   feed.write_feed
 end
