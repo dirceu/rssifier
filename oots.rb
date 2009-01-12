@@ -9,15 +9,19 @@
 require 'rssify'
 
 rssify do
-  { 
+  {
     :filename => 'oots.xml',
     :home => 'http://www.giantitp.com/comics/oots.html',
     :title => 'The Order of the Stick',
     :description => 'Unofficial OOtS feed by Dirceu Pereira Tiegs - http://dirceu.info',
-    :title_templ =>  'OOtS #{next_item}',
-    :link_templ => 'http://www.giantitp.com/comics/oots#{next_item}.html',
-    :get_body => Proc.new {|s| "<p><img src='http://www.giantitp.com/" + s.scan(/(\/comics\/images\/.+.gif)/)[0][0] + "' /></p>" },
-    :next_item_getter => Proc.new { |next_item| "0#{next_item.to_i}" if next_item.to_i < 1000 },
-    :next_item => ARGV[0],
+    :templates => {
+      :title => 'OOtS #{next_item}',
+      :link => 'http://www.giantitp.com/comics/oots#{next_item}.html',
+    },
+    :procs => {
+      :body => Proc.new {|s| "<p><img src='http://www.giantitp.com/" + s.scan(/(\/comics\/images\/.+.gif)/)[0][0] + "' /></p>" },
+      :next_item => Proc.new { |next_item| "0#{next_item.to_i}" if next_item.to_i < 1000 },
+    },
+    :initial_item => ARGV[0],
   }
 end

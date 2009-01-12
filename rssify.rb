@@ -1,37 +1,33 @@
 require 'net/http'
 require 'uri'
-require 'rss/2.0'
 require 'rss/maker'
 
 class RSSifier
-  
+
   def initialize(p)
-    # FIXME: These is fcking ugly!
-    @home,@title,@description,@title_templ,@link_templ,@get_body,@next_item_getter,@next_item = p[:home],p[:title],p[:description],p[:title_templ],p[:link_templ],p[:get_body],p[:next_item_getter],p[:next_item]
+    @p = p
     @rss_filename = File.expand_path('.') + '/' + p[:filename]
+
+    @next_item = p[:initial_item]
     if !@next_item
       guess_next_item
     end
   end
 
   def next_item
-    @next_item = @next_item_getter.call(@next_item)
+    @next_item = @p[:procs][:next_item].call(@next_item)
   end
 
   def _render_templ(s)
     s.gsub('#{next_item}', next_item.to_s)
   end
-  
+
   def link_templ
-    _render_templ(@link_templ)
-  end
-  
-  def title_templ
-    _render_templ(@title_templ)
+    _render_templ(@p[:templates][:link])
   end
 
-  def get_body(s)
-    @get_body.call(s)
+  def title_templ
+    _render_templ(@p[:templates][:title])
   end
 
   def guess_next_item
@@ -44,12 +40,12 @@ class RSSifier
       Process.exit
     end
   end
-  
+
   def create_feed
     @content = RSS::Maker.make('2.0') do |m|
-      m.channel.title = @title
-      m.channel.link = @home
-      m.channel.description = @description
+      m.channel.title = @p[:title]
+      m.channel.link = @p[:home]
+      m.channel.description = @p[:description]
       m.items.do_sort = true
 
       2.downto 0 do |n|
@@ -57,7 +53,7 @@ class RSSifier
         if response.code != "404"
           i = m.items.new_item
           i.title = title_templ
-          i.description = get_body(response.body)
+          i.description = @p[:procs][:body].call(response.body)
           i.link = link_templ
           i.date = Time.parse(response['last-modified'])
         end
@@ -65,7 +61,7 @@ class RSSifier
       end
     end
   end
-  
+
   def write_feed
     File.open(@rss_filename, "w") do |f|
       f.write(@content)
